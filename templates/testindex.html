@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rootify</title>
+    <style>
+        /* All styles from lp1.html */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                        url('/static/forest.jpg') center/cover fixed;
+            min-height: 100vh;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 4rem 5%;
+            min-height: calc(100vh - 4rem);
+            padding: 2rem;
+            overflow-y: auto;
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Navigation Styles */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            animation: slideIn 1s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-button {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button:hover {
+            background: #90EE90;
+            color: black;
+            transform: translateY(-2px);
+        }
+
+        /* Upload Area Styles */
+        .upload-area {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4rem;  /* Increased padding inside the box */
+            text-align: center;
+            margin: 4rem auto; /* Increased top margin to add space above */
+            max-width: 600px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #90EE90;
+        }
+
+        .upload-btn {
+            background: #90EE90;
+            color: black;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(144, 238, 144, 0.3);
+        }
+
+        /* Results Styles */
+        .analysis-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .result-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+
+    .result-card h3 {
+        margin-bottom: 1rem;
+        color: #90EE90;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Add smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
+    }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #90EE90;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error {
+            background: rgba(255, 59, 48, 0.1);
+            border-left: 4px solid #ff3b30;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .upload-area {
+                padding: 2rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        .preview-container {
+            text-align: center;
+            margin: 3rem auto;  /* Increased margin */
+            max-width: 600px;
+            display: flex;
+            justify-content: center;  /* Center horizontally */
+            align-items: center;      /* Center vertically */
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-text">Rootify</div>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-button">
+                <span>Home</span>
+            </a>
+            <a href="/species" class="nav-button">
+                <span>Species</span>
+            </a>
+            <a href="/map" class="nav-button">
+                <span>Map</span>
+            </a>
+        </div>
+    </nav>
+
+        <div class="upload-area" id="dropzone">
+            <i class="fas fa-leaf upload-icon"></i>
+            <p>Drag and drop your plant image here</p>
+            <button class="upload-btn" id="uploadBtn">
+                Choose File
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        </div>
+
+        <div class="preview-container">
+            <img id="preview" style="display: none;" alt="Preview">
+        </div>
+
+        <div class="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <h4>Analyzing your plant...</h4>
+        </div>
+
+        <div class="error" id="error" style="display: none;"></div>
+
+        <div class="analysis-container" id="analysisContainer" style="display: none;">
+            <h2>Analysis Results</h2>
+            <div id="result" class="results-grid"></div>
+        </div>
+    </div>
+    <div class="overlay"></div>
+
+    <script>
+    // Core functionality from the previous code
+    const handleFile = (file) => {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                uploadFile(file);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            handleError('Please select an image file');
+        }
+    }
+
+    const uploadFile = (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        document.querySelector('.loading').style.display = 'block';
+        document.getElementById('analysisContainer').style.display = 'none';
+        document.getElementById('error').style.display = 'none';
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayResults(data);
+            } else {
+                throw new Error(data.error || 'Upload failed');
+            }
+            document.querySelector('.loading').style.display = 'none';
+        })
+        .catch(err => {
+            document.querySelector('.loading').style.display = 'none';
+            handleError('Upload error: ' + err.message);
+        });
+    }
+
+
+    const processResults = (data) => {
+        try {
+            const jsonData = JSON.parse(data);
+            const { image_path, success, ...displayData } = jsonData;
+            
+            displayResults(displayData);
+        } catch (err) {
+            handleError('Error processing results');
+        }
+    }
+
+    const displayResults = (data) => {
+        const resultContainer = document.getElementById('result');
+        resultContainer.innerHTML = '';
+        
+        // Define the order of fields
+        const fieldOrder = [
+            'Scientific Name',
+            'Family',
+            'Common Names',
+            'Type',
+            'Size',
+            'Leaf Shape',
+            'Leaf Texture',
+            'Flowers/Fruit',
+            'Native Habitat',
+            'Climate',
+            'Soil Preference',
+            'Care Instructions',
+            'Maintenance',
+            'Interesting Facts',
+            'Uses'
+        ];
+
+        const displayData = data.display_data || {};
+        
+        // Create cards in specified order
+        fieldOrder.forEach(field => {
+            if (displayData[field]) {
+                const card = createResultCard(field, displayData[field]);
+                resultContainer.appendChild(card);
+            }
+        });
+
+        document.getElementById('analysisContainer').style.display = 'block';
+    };
+
+    const createResultCard = (heading, content) => {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        
+        card.innerHTML = `
+            <h3>${heading}</h3>
+            <div class="card-content">
+                <p>${content}</p>
+            </div>
+        `;
+
+        return card;
+    };
+
+
+    const handleError = (message) => {
+        const error = document.getElementById('error');
+        error.textContent = message;
+        error.style.display = 'block';
+        document.getElementById('analysisContainer').style.display = 'none';
+    }
+
+    // Event Listeners
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        handleFile(file);
+    });
+
+    const dropzone = document.getElementById('dropzone');
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#90EE90';
+        dropzone.style.background = 'rgba(255, 255, 255, 0.15)';
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        dropzone.style.background = 'rgba(255, 255, 255, 0.1)';
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        dropzone.style.background = 'rgba(255, 255, 255, 0.1)';
+        const file = e.dataTransfer.files[0];
+        handleFile(file);
+    });
+    </script>
+</body>
+</html>
