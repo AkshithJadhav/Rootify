@@ -85,7 +85,7 @@ def format_analysis(text):
 
 @app.route('/')
 def index():
-    return render_template('lp1.html')
+    return render_template('home.html')
 
 @app.route('/index')
 def upload_page():
