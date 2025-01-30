@@ -12,3 +12,5 @@
 4.	Geo-Located Plant Module: Utilizes the iNaturalist API to display region-specific plant data on an interactive map, enhancing geographical context in plant discovery.<br>
 <br>
 Rootify aspires to redefine how individuals interact with plant data by combining modern AI technology, API integrations, and intuitive design principles. It serves as a comprehensive resource for botanists, hobbyists, and nature enthusiasts, empowering them with tools to learn, explore, and engage with the world of plants effectively and innovatively.
+<br>
+<h2>Click <a href="https://rootify.onrender.com/"> Here</a> to View the Website</h2>
