@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -195,13 +196,27 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes slideIn {
-            from { transform: translateX(-100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
@@ -226,8 +241,108 @@
                 font-size: 1.5rem;
             }
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .plant-details {
+            margin-top: 20px;
+        }
+
+        .plant-details h3 {
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .detail-section {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .detail-section h4 {
+            margin-bottom: 5px;
+            color: #a0e4b0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.1rem;
+            margin-top: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
     <video autoplay muted loop class="video-background">
         <source src="/static/PalmTree.mp4" type="video/mp4">
@@ -249,18 +364,30 @@
         <main>
             <div id="categories">
                 {% if error %}
-                    <p class="error">{{ error }}</p>
+                <p class="error">{{ error }}</p>
                 {% else %}
-                    {% for category in categories %}
-                        <div class="category-box" onclick="loadCategory('{{ category }}')">
-                            {{ category }}
-                        </div>
-                    {% endfor %}
+                {% for category in categories %}
+                <div class="category-box" onclick="loadCategory('{{ category }}')">
+                    {{ category }}
+                </div>
+                {% endfor %}
                 {% endif %}
             </div>
 
             <div id="results"></div>
         </main>
+    </div>
+
+    <div id="plantModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div id="plantDetails" class="plant-details">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading plant details...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -287,7 +414,7 @@
 
                 const plants = data.plants;
                 const plantList = plants.map(plant => `
-                    <div class="plant-card">
+                    <div class="plant-card" onclick="showPlantDetails('${plant.scientific_name}')">
                         ${plant.image_url ? `<img src="${plant.image_url}" alt="${plant.common_name || plant.scientific_name}">` : ''}
                         <div class="plant-card-content">
                             <h3>${plant.common_name || 'Unknown Name'}</h3>
@@ -317,12 +444,71 @@
             const loadMoreButton = document.querySelector('.load-more');
             loadMoreButton.disabled = true;
             loadMoreButton.textContent = 'Loading...';
-            
+
             await loadPlants(currentCategory);
-            
+
             loadMoreButton.disabled = false;
             loadMoreButton.textContent = 'Load More';
         }
+
+
+        async function showPlantDetails(plantName) {
+            const modal = document.getElementById('plantModal');
+            const detailsDiv = document.getElementById('plantDetails');
+            modal.style.display = 'block';
+
+            detailsDiv.innerHTML = `
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading plant details...</div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/get_plant_details', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ plant_name: plantName })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    detailsDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                    return;
+                }
+
+                let detailsHTML = '<h3>Plant Details</h3>';
+                for (const [key, value] of Object.entries(data.details)) {
+                    detailsHTML += `
+                        <div class="detail-section">
+                            <h4>${key}</h4>
+                            <p>${value}</p>
+                        </div>
+                    `;
+                }
+                detailsDiv.innerHTML = detailsHTML;
+
+            } catch (error) {
+                detailsDiv.innerHTML = '<p class="error">An error occurred while fetching plant details.</p>';
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('plantModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('plantModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
     </script>
 </body>
+
 </html>
