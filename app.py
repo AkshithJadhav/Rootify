@@ -218,6 +218,50 @@ def chat_response():
         return jsonify({'response': response.text})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+    
+@app.route('/get_plant_details', methods=['POST'])
+def get_plant_details():
+    try:
+        data = request.json
+        plant_name = data.get('plant_name')
+        
+        if not plant_name:
+            return jsonify({'error': 'Plant name is required'}), 400
+
+        # Create the prompt for Gemini
+        prompt = f"""Provide detailed information about the plant {plant_name} with the following aspects:
+
+        1. Scientific Name: Provide the botanical name
+        2. Family: State the plant family
+        3. Common Names: List common or local names
+        4. Type: Specify plant type (tree, shrub, herb, etc.)
+        5. Size: Detail typical height and spread
+        6. Leaf Characteristics: Describe leaf morphology and texture
+        7. Flowers/Fruit: Describe flowering characteristics and fruits
+        8. Native Habitat: List original geographic regions
+        9. Climate: Describe preferred climate conditions
+        10. Growing Requirements: Detail soil, light, and water needs
+        11. Uses: Detail ornamental, practical, or cultural uses
+        12. Interesting Facts: Share unique characteristics or historical facts
+
+        For each aspect, provide detailed information."""
+
+        # Get response from Gemini
+        chat = model.start_chat(history=[])
+        response = chat.send_message(prompt)
+        
+        # Format the response
+        analysis_data = format_analysis(response.text)
+        
+        return jsonify({
+            'success': True,
+            'details': analysis_data
+        })
+
+    except Exception as e:
+        print(f"Error in get_plant_details: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
