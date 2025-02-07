@@ -4,10 +4,12 @@ import os
 from werkzeug.utils import secure_filename
 import re
 import requests
+from dotenv import load_dotenv
+import os
 app = Flask(__name__)
 
 # Replace with your Trefle API Key
-TREFLE_API_KEY = 'B6IJIAeO6cqpO1zK8q1iDiEvO3xO0B2OlQVWHD60R9Y'
+TREFLE_API_KEY = os.getenv('TREFLE_API')
 BASE_URL = 'https://trefle.io/api/v1/'
 
 
@@ -21,7 +23,8 @@ if not os.path.exists(UPLOAD_FOLDER):
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyDkORnqN5ldfNXEY1I9iZZSNnCfapsvz9w")
+load_dotenv()
+genai.configure(api_key=os.getenv('GEMINI_API'))
 generation_config = {
     "temperature": 0.9,
     "top_p": 1,
