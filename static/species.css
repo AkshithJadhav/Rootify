@@ -69,6 +69,7 @@ nav {
 .nav-links {
     display: flex;
     gap: 1.2rem;
+    /* Reduced from 1.5rem */
     align-items: center;
 }
 
@@ -76,7 +77,9 @@ nav {
     color: white;
     text-decoration: none;
     padding: 0.64rem 1.2rem;
+    /* Reduced from 0.8rem 1.5rem */
     border-radius: 20px;
+    /* Reduced from 25px */
     transition: all 0.3s;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -88,6 +91,24 @@ nav {
     background: rgb(32, 77, 20);
     color: white;
     transform: translateY(-2px);
+}
+
+.nav-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) rotate(45deg);
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.nav-button:hover::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.5);
 }
 
 /* Categories Grid Styling */
