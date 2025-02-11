@@ -7,6 +7,7 @@ import requests
 from dotenv import load_dotenv
 import os
 app = Flask(__name__)
+load_dotenv()
 
 # Replace with your Trefle API Key
 TREFLE_API_KEY = os.getenv('TREFLE_API')
@@ -23,7 +24,6 @@ if not os.path.exists(UPLOAD_FOLDER):
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configure Gemini API
-load_dotenv()
 genai.configure(api_key=os.getenv('GEMINI_API'))
 generation_config = {
     "temperature": 0.9,
