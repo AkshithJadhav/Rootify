@@ -168,12 +168,12 @@ nav {
 
 .upload-area:hover {
     background: rgba(255, 255, 255, 0.15);
-    border-color: #90EE90;
+    border-color: #014801;
 }
 
 .upload-btn {
-    background: #90EE90;
-    color: black;
+    background: #014801;
+    color: white;
     padding: 1rem 2rem;
     border: none;
     border-radius: 25px;
@@ -219,7 +219,7 @@ nav {
 
 .result-card h3 {
     margin-bottom: 1rem;
-    color: #90EE90;
+    color: #014801;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -238,7 +238,7 @@ html {
 
 .loading-spinner {
     border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top: 4px solid #90EE90;
+    border-top: 4px solid #014801;
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -315,7 +315,7 @@ html {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: #90EE90;
+    background: #014801;
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -353,7 +353,7 @@ html {
 }
 
 .chat-header {
-    background: #90EE90;
+    background: #014801;
     color: white;
     padding: 15px;
     border-radius: 12px 12px 0 0;
@@ -389,7 +389,7 @@ html {
 }
 
 .user-message {
-    background: #90EE90;
+    background: #014801;
     color: white;
     align-self: flex-end;
     border-bottom-right-radius: 5px;
@@ -418,11 +418,11 @@ html {
 }
 
 #messageInput:focus {
-    border-color: #90EE90;
+    border-color: #014801;
 }
 
 .send-button {
-    background: #90EE90;
+    background: #014801;
     color: white;
     border: none;
     padding: 8px 15px;
